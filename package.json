@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/ForceDotComLabs/react.force/issues"
   },
-  "homepage": "https://github.com/ForceDotComLabs/react.force#readme"
+  "homepage": "https://github.com/ForceDotComLabs/react.force#readme",
+  "peerDependencies": {
+    "react-native": ">=0.20.0"
+  }
 }
