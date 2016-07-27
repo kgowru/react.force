@@ -293,7 +293,7 @@ var dashboardStatus = function(dbId, callback, error){
  * @param  {?function} error    function which error response will be passed to
  */
 var dashboardRefresh = function(dbId, callback, error){
-  return sendRequest('/services/data', '/' + apiVersion + '/analytics/dashboards/' + dbId + '/status', callback, error, 'PUT');
+  return sendRequest('/services/data', '/' + apiVersion + '/analytics/dashboards/' + dbId, callback, error, 'PUT');
 }
 
 /**
