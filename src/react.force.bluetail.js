@@ -26,8 +26,6 @@
 
 'use strict';
 
-var { SalesforceNetReactBridge, SFNetReactBridge } = require('react-native').NativeModules;
-
 var Config = require('react-native-config');
 
 var btClientId = Config.btClientId,
@@ -35,36 +33,10 @@ var btClientId = Config.btClientId,
     btUserName = Config.btUserName,
     btPassword = Config.btPassword;
 
-var bluetailAccessToken = "",
-    bluetailAuthResponse = {};
+var bluetailAuthResponse = {};
 
 var bluetailLoginPreprodEndpoint = 'https://login.preprod.bluetail.salesforce.com',
     bluetailPreprodEndpoint = 'https://preprod.bluetail.salesforce.com';
-
-/**
- * Set apiVersion to be used
- */
-var setApiVersion = function(version) {
-    apiVersion = version;
-}
-
-/**
- * Return apiVersion used
- */
-var getApiVersion = function() {
-    return apiVersion;
-}
-
-/**
- * Send arbitray force.com request
- */
-var sendRequest = function(endPoint, path, successCB, errorCB, method, payload, headerParams) {
-    method = method || "GET";
-    payload = payload || {};
-    headerParams = headerParams || {};
-    var args = {endPoint: endPoint, path:path, method:method, queryParams:payload, headerParams:headerParams};
-    forceCommon.exec("SFNetReactBridge", "SalesforceNetReactBridge", SFNetReactBridge, SalesforceNetReactBridge, successCB, errorCB, "sendRequest", args);
-}
 
 /**
  * Get the bluetail access token using the clientId, clientSecret, username and password
@@ -88,10 +60,11 @@ var getBluetailAccessToken = function(callback, error){
     .then((response) =>
         response.json())
     .then((responseData) => {
-        console.log('bluetail oauth response' + responseData);
         bluetailAuthResponse = responseData;
         callback();
-    }).done();
+    }).catch((fetchError)=>{
+       error(fetchError);
+    });
 }
 
 /**
@@ -127,7 +100,9 @@ var btLogoRequest = function(companyName, callback, error){
             response.json())
         .then((responseData) => {
             callback(responseData);
-        }).done();
+        }).catch((fetchError)=>{
+           error(fetchError);
+        });
     })
 }
 
@@ -146,7 +121,7 @@ var btLogoBatchRequest = function(companyNames, callback, error){
 
         var batchRequest = companyNames.map((companyName)=>{return createSingleRequest(companyName)}).join();
         var options = {
-            path: '/v10/company/logo/query',
+            path: '/v10/company/logo/query?onlyManual=false&filterByRatio=false',
             method: 'POST',
             headers: {
                 'Content-Type':'application/json',
@@ -162,7 +137,9 @@ var btLogoBatchRequest = function(companyNames, callback, error){
             response.json())
         .then((responseData) => {
             callback(responseData);
-        }).done();
+        }).catch((fetchError)=>{
+           error(fetchError);
+        });
     })
 }
 
@@ -191,7 +168,9 @@ var btInsightsRequest = function(companyName, callback, error){
             response.json())
         .then((responseData) => {
             callback(responseData);
-        }).done();
+        }).catch((fetchError)=>{
+           error(fetchError);
+        });
     })
 }
 
@@ -199,9 +178,6 @@ var btInsightsRequest = function(companyName, callback, error){
  * Part of the module that is public
  */
 module.exports = {
-    setApiVersion: setApiVersion,
-    getApiVersion: getApiVersion,
-    sendRequest: sendRequest,
     btLogoRequest: btLogoRequest,
     btLogoBatchRequest: btLogoBatchRequest,
     btInsightsRequest: btInsightsRequest
